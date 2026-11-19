@@ -6,6 +6,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from matplotlib.ticker import PercentFormatter
 import numpy as np
 import pandas as pd
 
@@ -121,28 +122,80 @@ def make_figures(result_dir: Path) -> None:
     _save(fig, figure_dir, "standard_error_vs_cpu")
 
     exercise = pd.read_csv(result_dir / "exercise_diagnostics.csv")
-    representative = exercise[exercise["replicate"] == exercise["replicate"].min()]
-    scenario_ids = representative["scenario"].drop_duplicates().tolist()
+    scenario_ids = exercise["scenario"].drop_duplicates().tolist()
     examples = []
     for contract in ("vanilla", "asian_arithmetic"):
         candidates = [
             row for row in scenario_ids
-            if representative.loc[representative["scenario"] == row, "contract"].iloc[0] == contract
+            if exercise.loc[exercise["scenario"] == row, "contract"].iloc[0] == contract
         ]
         if candidates:
             examples.append(candidates[0])
-    fig, axes = plt.subplots(1, max(len(examples), 1), figsize=(6 * max(len(examples), 1), 4))
+    fig, axes = plt.subplots(
+        1, max(len(examples), 1), figsize=(6.2 * max(len(examples), 1), 4.5)
+    )
     axes = np.atleast_1d(axes)
     for axis, scenario in zip(axes, examples):
-        subset = representative[
-            (representative["scenario"] == scenario)
-            & (representative["n_paths"] == representative.loc[representative["scenario"] == scenario, "n_paths"].min())
+        subset = exercise[
+            (exercise["scenario"] == scenario)
+            & (
+                exercise["n_paths"]
+                == exercise.loc[exercise["scenario"] == scenario, "n_paths"].max()
+            )
         ]
-        axis.bar(subset["time_index"], subset["frequency"])
-        axis.set_xlabel("Exercise date index")
+        subset = subset.sort_values(["time_index", "replicate"])
+        distribution = (
+            subset.groupby("time_index", sort=True)
+            .agg(
+                time=("time", "first"),
+                probability=("frequency", "mean"),
+                replication_se=(
+                    "frequency",
+                    lambda values: values.std(ddof=1) / np.sqrt(values.size)
+                    if values.size > 1
+                    else 0.0,
+                ),
+            )
+            .reset_index()
+        )
+        maturity = int(distribution["time_index"].max())
+        colors = [
+            "#1f77b4" if time_index != maturity else "#d62728"
+            for time_index in distribution["time_index"]
+        ]
+        axis.bar(
+            distribution["time"],
+            distribution["probability"],
+            width=distribution["time"].diff().dropna().min() * 0.8
+            if distribution.shape[0] > 1
+            else 0.05,
+            color=colors,
+            yerr=1.96 * distribution["replication_se"],
+            capsize=2,
+            ecolor="#333333",
+            linewidth=0.6,
+        )
+        axis.set_xlabel("Exercise time (years)")
         axis.set_ylabel("Exercise probability")
-        axis.set_title(scenario)
-    fig.suptitle("Representative frozen-policy exercise-time distributions")
+        axis.yaxis.set_major_formatter(PercentFormatter(1.0))
+        axis.set_title(scenario.replace("_", " "))
+        maturity_probability = distribution.loc[
+            distribution["time_index"] == maturity, "probability"
+        ].iloc[0]
+        axis.text(
+            0.02,
+            0.96,
+            f"Maturity exercise: {maturity_probability:.1%}",
+            transform=axis.transAxes,
+            ha="left",
+            va="top",
+            fontsize=9,
+            bbox={"facecolor": "white", "edgecolor": "none", "alpha": 0.8},
+        )
+    fig.suptitle(
+        "Frozen-policy exercise-time distributions "
+        "(largest N; mean with 95% replicate error bars)"
+    )
     fig.tight_layout()
     _save(fig, figure_dir, "exercise_time_histograms")
 
