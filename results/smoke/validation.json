@@ -1,0 +1,85 @@
+{
+  "run_id": "smoke",
+  "validation_scope": "Numerical smoke/run diagnostics; pytest results are recorded separately by the invoking command.",
+  "checks": [
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 2.066401004420346,
+        "bermudan_refined": [
+          2.2970702194112533,
+          2.297125582060028
+        ],
+        "continuous_american": [
+          2.31932786561053,
+          2.3194528129481884
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= both Bermudan values <= both continuous-American values (+0.002 upper tolerance)"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 5.536264877470387e-05,
+      "passed": true,
+      "tolerance": "absolute 2400-step versus 1200-step price difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "policy_value_reference_gap",
+      "value": 0.05106210606780648,
+      "passed": true,
+      "tolerance": "absolute gap <= max(0.50, 5 x mean path SE) = 0.5"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.247570042257073,
+        "mean_across_replications": 0.08126075790256859
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.1538416698573195,
+        "mean_across_replications": 0.0561173935024547
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.1780042726198563,
+        "mean_across_replications": 0.052469492334352635
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.5943575730203192,
+        "mean_across_replications": 0.06416658435181864
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "all",
+      "check": "finite_pricing_outputs",
+      "value": true,
+      "passed": true,
+      "tolerance": "all prices, standard errors, and path payoff SDs finite"
+    }
+  ],
+  "passed": true
+}

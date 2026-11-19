@@ -1,0 +1,8 @@
+{
+  "return_code": 0,
+  "tests": 20,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "junit_file": "D:\\stat906\\FinalProject\\stat906_adaptive_cv\\results\\smoke\\pytest.xml"
+}

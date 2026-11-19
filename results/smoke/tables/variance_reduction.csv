@@ -1,0 +1,7 @@
+scenario,contract,n_paths,method,mean_vrf,median_vrf,vrf_replicate_sd
+asian_put_k95,asian_arithmetic,1000,linear_cv,2.198502962319733,2.263371382596729,0.1311973519713585
+asian_put_k95,asian_arithmetic,1000,plain,1.0,1.0,0.0
+asian_put_k95,asian_arithmetic,1000,spline_cv,74.37039614086588,75.80835267264487,7.579481561217676
+vanilla_atm_sigma20,vanilla,1000,linear_cv,2.704528408704666,2.752910075595773,0.1227312340819059
+vanilla_atm_sigma20,vanilla,1000,plain,1.0,1.0,0.0
+vanilla_atm_sigma20,vanilla,1000,spline_cv,95.20324819978264,95.95900495358688,6.986316146253645

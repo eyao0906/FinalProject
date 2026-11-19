@@ -1,0 +1,6 @@
+scenario,benchmark,tree_steps,price,exercise_grid
+vanilla_atm_sigma20,European Black-Scholes put,0,2.066401004420346,maturity only
+vanilla_atm_sigma20,same-grid monthly Bermudan CRR,1200,2.2970702194112533,"0..12, stride=100"
+vanilla_atm_sigma20,continuous-exercise American CRR sanity reference,1200,2.31932786561053,0..1200
+vanilla_atm_sigma20,same-grid monthly Bermudan CRR,2400,2.297125582060028,"0..12, stride=200"
+vanilla_atm_sigma20,continuous-exercise American CRR sanity reference,2400,2.3194528129481884,0..2400

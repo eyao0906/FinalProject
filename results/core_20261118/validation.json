@@ -1,0 +1,258 @@
+{
+  "run_id": "core",
+  "validation_scope": "Numerical smoke/run diagnostics; pytest results are recorded separately by the invoking command.",
+  "checks": [
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 2.066401004420346,
+        "bermudan_refined": [
+          2.2970702194112533,
+          2.297125582060028
+        ],
+        "continuous_american": [
+          2.31932786561053,
+          2.3194528129481884
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= both Bermudan values <= both continuous-American values (+0.002 upper tolerance)"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 5.536264877470387e-05,
+      "passed": true,
+      "tolerance": "absolute 2400-step versus 1200-step price difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "policy_value_reference_gap",
+      "value": 0.003014809583909539,
+      "passed": true,
+      "tolerance": "absolute gap <= max(0.50, 5 x mean path SE) = 0.5"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 5.059623125933808,
+        "bermudan_refined": [
+          5.2918968376175854,
+          5.29215427050106
+        ],
+        "continuous_american": [
+          5.317667423104326,
+          5.3179831561584505
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= both Bermudan values <= both continuous-American values (+0.002 upper tolerance)"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "bermudan_tree_refinement",
+      "value": 0.0002574328834743511,
+      "passed": true,
+      "tolerance": "absolute 2400-step versus 1200-step price difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "policy_value_reference_gap",
+      "value": 0.002161433347620978,
+      "passed": true,
+      "tolerance": "absolute gap <= max(0.50, 5 x mean path SE) = 0.5"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 3.84430779159684,
+        "bermudan_refined": [
+          4.450551199368358,
+          4.450254934745213
+        ],
+        "continuous_american": [
+          4.486645369143512,
+          4.486618064668322
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= both Bermudan values <= both continuous-American values (+0.002 upper tolerance)"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 0.00029626462314524815,
+      "passed": true,
+      "tolerance": "absolute 2400-step versus 1200-step price difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "policy_value_reference_gap",
+      "value": 0.017478623637602553,
+      "passed": true,
+      "tolerance": "absolute gap <= max(0.50, 5 x mean path SE) = 0.5"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 1.0169152264282708,
+        "bermudan_refined": [
+          1.1009802407482228,
+          1.10089221553583
+        ],
+        "continuous_american": [
+          1.1131537887400482,
+          1.1131296279794913
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= both Bermudan values <= both continuous-American values (+0.002 upper tolerance)"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 8.802521239270611e-05,
+      "passed": true,
+      "tolerance": "absolute 2400-step versus 1200-step price difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "policy_value_reference_gap",
+      "value": 0.003564756485114229,
+      "passed": true,
+      "tolerance": "absolute gap <= max(0.50, 5 x mean path SE) = 0.5"
+    },
+    {
+      "scenario": "asian_put_k115",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.4119154518776447,
+        "mean_across_replications": -0.0021069620821258664
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "asian_put_k115",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.260608295296135,
+        "mean_across_replications": -0.00286476839335585
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.2357464875032016,
+        "mean_across_replications": -0.0003046953527979887
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.517291825342255,
+        "mean_across_replications": -0.000127267263179499
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.151846786235513,
+        "mean_across_replications": 0.0007688904509070476
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.0722766131920736,
+        "mean_across_replications": 0.0012638053556712624
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.6844875403337567,
+        "mean_across_replications": 0.005242271783943296
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.7685970330908223,
+        "mean_across_replications": 0.0036105557263360847
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.6680021146740631,
+        "mean_across_replications": -0.0032404580733279365
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.9966789418163466,
+        "mean_across_replications": -0.0061670767792919665
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.295325504337259,
+        "mean_across_replications": -0.00030170093279338134
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.865200070126309,
+        "mean_across_replications": 0.0013493805960301188
+      },
+      "passed": true,
+      "tolerance": "each independent pricing replication has |mean(M_tau)| <= 6 estimated path standard errors"
+    },
+    {
+      "scenario": "all",
+      "check": "finite_pricing_outputs",
+      "value": true,
+      "passed": true,
+      "tolerance": "all prices, standard errors, and path payoff SDs finite"
+    }
+  ],
+  "passed": true
+}

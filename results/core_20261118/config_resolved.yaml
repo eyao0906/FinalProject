@@ -1,0 +1,67 @@
+run_id: core
+base_seed: 9062026
+policy_training: 20000
+value_training: 20000
+value_validation: 5000
+pricing_replications: 30
+pricing_sizes:
+- 5000
+- 20000
+minimum_regression_paths: 200
+tree_steps:
+- 1200
+- 2400
+knots_quantiles:
+- 0.25
+- 0.5
+- 0.75
+vanilla:
+- id: vanilla_atm_sigma20
+  spot: 40.0
+  strike: 40.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.2
+  maturity: 1.0
+  steps: 12
+- id: vanilla_atm_sigma40
+  spot: 40.0
+  strike: 40.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.4
+  maturity: 1.0
+  steps: 12
+- id: vanilla_itm_spot36_sigma20
+  spot: 36.0
+  strike: 40.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.2
+  maturity: 1.0
+  steps: 12
+- id: vanilla_otm_spot44_sigma20
+  spot: 44.0
+  strike: 40.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.2
+  maturity: 1.0
+  steps: 12
+asian:
+- id: asian_put_k95
+  spot: 100.0
+  strike: 95.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.3
+  maturity: 0.5
+  steps: 6
+- id: asian_put_k115
+  spot: 100.0
+  strike: 115.0
+  rate: 0.06
+  dividend: 0.0
+  volatility: 0.3
+  maturity: 0.5
+  steps: 6

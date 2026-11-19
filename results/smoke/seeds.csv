@@ -1,0 +1,13 @@
+scenario,role,replicate,n_paths,seed
+vanilla_atm_sigma20,policy_fit,0,2000,3765463263
+vanilla_atm_sigma20,value_fit,0,2000,2527714775
+vanilla_atm_sigma20,value_validation,0,1000,3497773349
+vanilla_atm_sigma20,pricing,0,1000,2869237941
+vanilla_atm_sigma20,pricing,1,1000,1656584920
+vanilla_atm_sigma20,pricing,2,1000,130767215
+asian_put_k95,policy_fit,0,2000,50123122
+asian_put_k95,value_fit,0,2000,3410910829
+asian_put_k95,value_validation,0,1000,3551747620
+asian_put_k95,pricing,0,1000,999717617
+asian_put_k95,pricing,1,1000,2582895596
+asian_put_k95,pricing,2,1000,4232525323

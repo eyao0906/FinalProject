@@ -1,0 +1,3 @@
+contract,scenario,n_paths,linear_cv,spline_cv
+asian_arithmetic,asian_put_k95,1000,2.263371382596729,75.80835267264487
+vanilla,vanilla_atm_sigma20,1000,2.752910075595773,95.95900495358688
