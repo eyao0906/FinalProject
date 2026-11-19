@@ -1,0 +1,22 @@
+{
+  "result_dir": "D:\\stat906\\FinalProject\\stat906_adaptive_cv\\results\\core_20261118",
+  "passed": true,
+  "checks": [
+    {
+      "table": "vrf_main_presentation.csv",
+      "passed": true
+    },
+    {
+      "table": "price_facets_presentation.csv",
+      "passed": true
+    },
+    {
+      "table": "cpu_efficiency_presentation.csv",
+      "passed": true
+    },
+    {
+      "table": "exercise_distribution_presentation.csv",
+      "passed": true
+    }
+  ]
+}

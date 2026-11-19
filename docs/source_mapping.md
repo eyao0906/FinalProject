@@ -81,5 +81,6 @@ inconsistent with backward realized-cashflow recursion and forward first
 exercise. Existing Asian scripts use a pre-started average/lockout and are
 not the approved contract. `benchmarks.py` implements continuously
 exercisable CRR/FD references, not the same-date Bermudan comparator. These
-findings motivate a clean implementation under `stat906_adaptive_cv/`;
+findings motivate the clean implementation now published at the repository
+root in `src/stat906cv/`;
 no legacy prices or CSV outputs are imported.

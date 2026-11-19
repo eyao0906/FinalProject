@@ -1,0 +1,17 @@
+{
+  "python": "3.14.7 (tags/v3.14.7:823f032, Aug  5 2026, 10:51:32) [MSC v.1944 64 bit (AMD64)]",
+  "python_executable": "C:\\Users\\ethan\\AppData\\Local\\Python\\pythoncore-3.14-64\\python.exe",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "processor": "AMD64 Family 25 Model 97 Stepping 2, AuthenticAMD",
+  "cpu_count": 32,
+  "process_time_resolution_seconds": 1e-07,
+  "wall_time_resolution_seconds": 1e-07,
+  "cpu_timing_reliability_floor_seconds": 0.05,
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "pandas": "3.0.6",
+  "matplotlib": "3.11.2",
+  "pyyaml": "6.0.3",
+  "run_id": "sensitivity_fit_0",
+  "legacy_repository_sha_audited": "aa4d025d05db285c74c8ef03f6e587884a8f5f6f"
+}

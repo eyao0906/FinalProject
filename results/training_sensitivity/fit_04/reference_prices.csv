@@ -1,0 +1,21 @@
+scenario,benchmark,tree_steps,price,exercise_grid
+vanilla_atm_sigma20,European Black-Scholes put,0,2.066401004420346,maturity only
+vanilla_atm_sigma20,same-grid monthly Bermudan CRR,1200,2.2970702194112533,"0..12, stride=100"
+vanilla_atm_sigma20,continuous-exercise American CRR sanity reference,1200,2.31932786561053,0..1200
+vanilla_atm_sigma20,same-grid monthly Bermudan CRR,2400,2.297125582060028,"0..12, stride=200"
+vanilla_atm_sigma20,continuous-exercise American CRR sanity reference,2400,2.3194528129481884,0..2400
+vanilla_atm_sigma40,European Black-Scholes put,0,5.059623125933808,maturity only
+vanilla_atm_sigma40,same-grid monthly Bermudan CRR,1200,5.2918968376175854,"0..12, stride=100"
+vanilla_atm_sigma40,continuous-exercise American CRR sanity reference,1200,5.317667423104326,0..1200
+vanilla_atm_sigma40,same-grid monthly Bermudan CRR,2400,5.29215427050106,"0..12, stride=200"
+vanilla_atm_sigma40,continuous-exercise American CRR sanity reference,2400,5.3179831561584505,0..2400
+vanilla_itm_spot36_sigma20,European Black-Scholes put,0,3.84430779159684,maturity only
+vanilla_itm_spot36_sigma20,same-grid monthly Bermudan CRR,1200,4.450551199368358,"0..12, stride=100"
+vanilla_itm_spot36_sigma20,continuous-exercise American CRR sanity reference,1200,4.486645369143512,0..1200
+vanilla_itm_spot36_sigma20,same-grid monthly Bermudan CRR,2400,4.450254934745213,"0..12, stride=200"
+vanilla_itm_spot36_sigma20,continuous-exercise American CRR sanity reference,2400,4.486618064668322,0..2400
+vanilla_otm_spot44_sigma20,European Black-Scholes put,0,1.0169152264282708,maturity only
+vanilla_otm_spot44_sigma20,same-grid monthly Bermudan CRR,1200,1.1009802407482228,"0..12, stride=100"
+vanilla_otm_spot44_sigma20,continuous-exercise American CRR sanity reference,1200,1.1131537887400482,0..1200
+vanilla_otm_spot44_sigma20,same-grid monthly Bermudan CRR,2400,1.10089221553583,"0..12, stride=200"
+vanilla_otm_spot44_sigma20,continuous-exercise American CRR sanity reference,2400,1.1131296279794913,0..2400

@@ -25,8 +25,11 @@ python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
 python scripts/run_tests.py --output results/smoke
 python scripts/run_smoke.py --output results/smoke
-python -m stat906cv.experiments --config configs/core.yaml --output results/core
-python scripts/make_tables_figures.py results/core
+python scripts/run_core.py --output results/core_20261118
+python scripts/revalidate_results.py results/core_20261118
+python scripts/run_training_sensitivity.py
+python scripts/make_tables_figures.py results/core_20261118
+python scripts/verify_numerical_integrity.py --reference-ref main
 ```
 
 The smoke run must pass its saved numerical validation checks before the core
@@ -41,6 +44,10 @@ Run `python -m stat906cv.experiments --help` for CLI options. Configurations,
 resolved seeds, environment metadata, raw replication results, diagnostics,
 figures, and interpretation notes are saved below the chosen result
 directory. Detailed equations, source mapping, validation, and deviations are
-in `docs/`. The completed core-run analysis is in
+in `docs/`. The repository root already contains `scripts/`, `src/stat906cv/`,
+`configs/`, and `results/`; commands above are intended to run there. The
+completed core-run analysis is in
 [`docs/results_interpretation.md`](docs/results_interpretation.md), with
-execution details in [`docs/run_manifest.md`](docs/run_manifest.md).
+execution details in [`docs/run_manifest.md`](docs/run_manifest.md) and the
+training-fit study in
+[`docs/training_sensitivity.md`](docs/training_sensitivity.md).

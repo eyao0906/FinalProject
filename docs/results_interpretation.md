@@ -11,6 +11,12 @@ scenario and use separate training/validation streams from pricing. Thus
 replication intervals quantify pricing-sample uncertainty conditional on
 those fitted models, not total uncertainty over retraining.
 
+Corrected saved-data validation now standardizes each martingale mean with
+its own sample size. The independently verified maximum absolute z-score is
+2.8652. The benchmark table reports signed and relative fixed-policy/CRR
+gaps rather than using the former loose 0.50 tolerance. The original
+pricing rows remain unchanged.
+
 The t intervals below are across the 30 replication prices. The separate
 pathwise intervals in the raw rows quantify Monte Carlo error within an
 individual replication. The CV is designed to estimate the value of the
@@ -84,6 +90,14 @@ approximation bias.
    replications and a 0.05-second aggregate floor is enforced. Do not treat
    them as portable benchmarks.
 
+9. **The qualitative spline advantage survives independent training fits.**
+   Five-fit sensitivity estimates retain large spline VRFs (about 38×–171×
+   for vanilla and 76×–96× for Asian). However, only 15 of 18 original
+   core means fall inside the corresponding five-fit sensitivity interval.
+   This is direct evidence that the very narrow original conditional
+   intervals can omit policy/value-training uncertainty. See
+   [`training_sensitivity.md`](training_sensitivity.md).
+
 ## Files and figures
 
 - [`summary.csv`](../results/core_20261118/summary.csv): means, replication
@@ -95,6 +109,8 @@ approximation bias.
   matched Bermudan, European, and continuous-American references.
 - [`tables/`](../results/core_20261118/tables/): presentation-oriented
   estimator, VRF, and martingale tables.
+- [`tables/benchmark_comparison.csv`](../results/core_20261118/tables/benchmark_comparison.csv):
+  signed/relative gaps, CRR refinement, and statistical uncertainty.
 - [`figures/price_confidence_intervals.png`](../results/core_20261118/figures/price_confidence_intervals.png),
   [`figures/vrf_vanilla_by_size_volatility.png`](../results/core_20261118/figures/vrf_vanilla_by_size_volatility.png),
   [`figures/vrf_asian_vs_vanilla.png`](../results/core_20261118/figures/vrf_asian_vs_vanilla.png),
@@ -109,6 +125,7 @@ MARS/LDA-MARS method: it uses an additive degree-one hinge spline with
 training-quantile knots. The Asian state is arithmetic and excludes S0, as
 approved, rather than the paper's log-geometric transformation. The optional
 basket experiment, EH CV-enhanced stopping regression, dual upper bound,
-exact Asian benchmark, and independent training-seed sensitivity were not
-run. The first two test-discovered defects and their fixes are documented in
+exact Asian benchmark were not run. The corrected validation defects,
+the training-seed sensitivity, and remaining modeling limitations are
+documented in
 [`deviations_and_hurdles.md`](deviations_and_hurdles.md).

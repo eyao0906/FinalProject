@@ -44,6 +44,17 @@
    intercept-unpenalized ridge correction when rank deficient or
    ill-conditioned. The function values and conditional expectations use
    the same fitted coefficients; no coefficient is silently dropped.
+4. **Mixed-sample martingale standardization.** The first saved-data
+   validator grouped 5,000- and 20,000-path replications together and used
+   the first row's `n_paths` for every z-score. Validation now groups by
+   scenario, method, and actual sample size and fails zero/non-finite
+   standard errors. The independently corrected maximum z-score is 2.8652.
+5. **Uninformative policy gap gate.** The previous
+   `max(0.50, 5*SE)` test could accept a large approximation gap without
+   explaining it. It is replaced by signed/relative benchmark comparisons,
+   replication uncertainty, tree-refinement uncertainty, and a specific
+   statistically significant lower-bound-violation screen. A narrow CI below
+   the CRR price is not considered an implementation failure.
 
 ## Inference impact and remaining risks
 
@@ -53,8 +64,8 @@ them. The final validation document and run artifacts will report only
 post-fix results, with the original failures preserved here for audit.
 Because the evaluation replicates reuse a single independently trained
 policy and value fit, the main intervals are conditional on training. A
-separate training-seed study was not run; training-fit variability is
-therefore not quantified. Windows process CPU readings are coarse for an
+five-fit training-seed study is now recorded separately; it does not alter
+the original core estimates. Windows process CPU readings are coarse for an
 individual short replication. CPU-adjusted efficiency is consequently
 calculated after aggregating paired replication costs, and is withheld when
 either aggregate total is below 0.05 seconds; the resulting efficiency

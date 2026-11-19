@@ -1,0 +1,71 @@
+{
+  "reference_ref": "main",
+  "all_numerical_outputs_unchanged": true,
+  "files": [
+    {
+      "file": "results/core_20261118/per_replication.csv",
+      "reference_shape": [
+        1080,
+        40
+      ],
+      "current_shape": [
+        1080,
+        40
+      ],
+      "unchanged": true,
+      "changed_columns": []
+    },
+    {
+      "file": "results/core_20261118/summary.csv",
+      "reference_shape": [
+        36,
+        40
+      ],
+      "current_shape": [
+        36,
+        40
+      ],
+      "unchanged": true,
+      "changed_columns": []
+    },
+    {
+      "file": "results/core_20261118/reference_prices.csv",
+      "reference_shape": [
+        20,
+        5
+      ],
+      "current_shape": [
+        20,
+        5
+      ],
+      "unchanged": true,
+      "changed_columns": []
+    },
+    {
+      "file": "results/core_20261118/seeds.csv",
+      "reference_shape": [
+        378,
+        5
+      ],
+      "current_shape": [
+        378,
+        5
+      ],
+      "unchanged": true,
+      "changed_columns": []
+    },
+    {
+      "file": "results/core_20261118/exercise_diagnostics.csv",
+      "reference_shape": [
+        3960,
+        8
+      ],
+      "current_shape": [
+        3960,
+        8
+      ],
+      "unchanged": true,
+      "changed_columns": []
+    }
+  ]
+}

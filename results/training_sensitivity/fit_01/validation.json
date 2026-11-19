@@ -1,0 +1,494 @@
+{
+  "run_id": "sensitivity_fit_1",
+  "validation_scope": "Numerical smoke/run diagnostics; pytest results are recorded separately by the invoking command.",
+  "checks": [
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "n_paths": 20000,
+      "method": "linear_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.0027540283044653613,
+        "relative_gap_percent": -0.11989019346498199,
+        "replicate_se": 0.007948675877530379,
+        "replicate_ci_lower": 2.2723024915225896,
+        "replicate_ci_upper": 2.316440615988536,
+        "reference_price": 2.297125582060028,
+        "tree_refinement_difference": 5.536264877470387e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "n_paths": 20000,
+      "method": "plain",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": 0.008618276083779186,
+        "relative_gap_percent": 0.37517653153513897,
+        "replicate_se": 0.014435527899870671,
+        "replicate_ci_lower": 2.265664407365265,
+        "replicate_ci_upper": 2.3458233089223492,
+        "reference_price": 2.297125582060028,
+        "tree_refinement_difference": 5.536264877470387e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "n_paths": 20000,
+      "method": "spline_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.006313057222201213,
+        "relative_gap_percent": -0.27482420950359,
+        "replicate_se": 0.0007719600772969947,
+        "replicate_ci_lower": 2.2886692200598073,
+        "replicate_ci_upper": 2.2929558296158463,
+        "reference_price": 2.297125582060028,
+        "tree_refinement_difference": 5.536264877470387e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "n_paths": 20000,
+      "method": "linear_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": 0.0101833096207109,
+        "relative_gap_percent": 0.19242276585687568,
+        "replicate_se": 0.016028480590974264,
+        "replicate_ci_lower": 5.257835383641202,
+        "replicate_ci_upper": 5.346839776602339,
+        "reference_price": 5.29215427050106,
+        "tree_refinement_difference": 0.0002574328834743511,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "n_paths": 20000,
+      "method": "plain",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": 0.016151920288200117,
+        "relative_gap_percent": 0.30520501600326283,
+        "replicate_se": 0.015421804415007718,
+        "replicate_ci_lower": 5.265488397407894,
+        "replicate_ci_upper": 5.351123984170626,
+        "reference_price": 5.29215427050106,
+        "tree_refinement_difference": 0.0002574328834743511,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "n_paths": 20000,
+      "method": "spline_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.0073098039039027896,
+        "relative_gap_percent": -0.1381252988910072,
+        "replicate_se": 0.0013376896598147289,
+        "replicate_ci_lower": 5.281130444688891,
+        "replicate_ci_upper": 5.288558488505423,
+        "reference_price": 5.29215427050106,
+        "tree_refinement_difference": 0.0002574328834743511,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "n_paths": 20000,
+      "method": "linear_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.002278917533216074,
+        "relative_gap_percent": -0.051208696279925525,
+        "replicate_se": 0.007051355084544568,
+        "replicate_ci_lower": 4.428398316902501,
+        "replicate_ci_upper": 4.4675537175214926,
+        "reference_price": 4.450254934745213,
+        "tree_refinement_difference": 0.00029626462314524815,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "n_paths": 20000,
+      "method": "plain",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.00015280672375883597,
+        "relative_gap_percent": -0.0034336622508028183,
+        "replicate_se": 0.00759286310482308,
+        "replicate_ci_lower": 4.429020960419631,
+        "replicate_ci_upper": 4.471183295623277,
+        "reference_price": 4.450254934745213,
+        "tree_refinement_difference": 0.00029626462314524815,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "n_paths": 20000,
+      "method": "spline_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.008301091036762465,
+        "relative_gap_percent": -0.1865306855108902,
+        "replicate_se": 0.0010002858309356292,
+        "replicate_ci_lower": 4.439176605009351,
+        "replicate_ci_upper": 4.44473108240755,
+        "reference_price": 4.450254934745213,
+        "tree_refinement_difference": 0.00029626462314524815,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "n_paths": 20000,
+      "method": "linear_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.007475604817236636,
+        "relative_gap_percent": -0.6790496573361711,
+        "replicate_se": 0.0033963203058077953,
+        "replicate_ci_lower": 1.0839869138298495,
+        "replicate_ci_upper": 1.1028463076073374,
+        "reference_price": 1.10089221553583,
+        "tree_refinement_difference": 8.802521239270611e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "n_paths": 20000,
+      "method": "plain",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.005899749341324867,
+        "relative_gap_percent": -0.5359061730174303,
+        "replicate_se": 0.006696151503401222,
+        "replicate_ci_lower": 1.076400969129224,
+        "replicate_ci_upper": 1.1135839632597864,
+        "reference_price": 1.10089221553583,
+        "tree_refinement_difference": 8.802521239270611e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "n_paths": 20000,
+      "method": "spline_cv",
+      "check": "fixed_policy_reference_comparison",
+      "value": {
+        "gap": -0.00464104034478674,
+        "relative_gap_percent": -0.4215708204029617,
+        "replicate_se": 0.000330512842601869,
+        "replicate_ci_lower": 1.0953335244269964,
+        "replicate_ci_upper": 1.0971688259550902,
+        "reference_price": 1.10089221553583,
+        "tree_refinement_difference": 8.802521239270611e-05,
+        "possible_lower_bound_violation": false
+      },
+      "passed": true,
+      "tolerance": "positive gap must not exceed its across-replication 95% CI half-width plus CRR refinement difference; gap magnitude is an empirical policy-approximation finding"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 2.066401004420346,
+        "bermudan_refined": [
+          2.2970702194112533,
+          2.297125582060028
+        ],
+        "continuous_american": [
+          2.31932786561053,
+          2.3194528129481884
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= matched Bermudan CRR <= continuous-American allowing 0.002 numerical tolerance"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 5.536264877470387e-05,
+      "passed": true,
+      "tolerance": "maximum CRR refinement difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 5.059623125933808,
+        "bermudan_refined": [
+          5.2918968376175854,
+          5.29215427050106
+        ],
+        "continuous_american": [
+          5.317667423104326,
+          5.3179831561584505
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= matched Bermudan CRR <= continuous-American allowing 0.002 numerical tolerance"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "check": "bermudan_tree_refinement",
+      "value": 0.0002574328834743511,
+      "passed": true,
+      "tolerance": "maximum CRR refinement difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 3.84430779159684,
+        "bermudan_refined": [
+          4.450551199368358,
+          4.450254934745213
+        ],
+        "continuous_american": [
+          4.486645369143512,
+          4.486618064668322
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= matched Bermudan CRR <= continuous-American allowing 0.002 numerical tolerance"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 0.00029626462314524815,
+      "passed": true,
+      "tolerance": "maximum CRR refinement difference <= 0.02"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "benchmark_ordering",
+      "value": {
+        "european": 1.0169152264282708,
+        "bermudan_refined": [
+          1.1009802407482228,
+          1.10089221553583
+        ],
+        "continuous_american": [
+          1.1131537887400482,
+          1.1131296279794913
+        ]
+      },
+      "passed": true,
+      "tolerance": "European <= matched Bermudan CRR <= continuous-American allowing 0.002 numerical tolerance"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "check": "bermudan_tree_refinement",
+      "value": 8.802521239270611e-05,
+      "passed": true,
+      "tolerance": "maximum CRR refinement difference <= 0.02"
+    },
+    {
+      "scenario": "asian_put_k115",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.954447654949689,
+        "mean_across_replications": -0.08122875498903376,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "asian_put_k115",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.8449390443187723,
+        "mean_across_replications": -0.08019881710740734,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.5673436989339806,
+        "mean_across_replications": 0.007409230024277383,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "asian_put_k95",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.6032488086201189,
+        "mean_across_replications": 0.016017792204590035,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.9751817075318914,
+        "mean_across_replications": 0.01137230438824488,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_atm_sigma20",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 2.5386665344421555,
+        "mean_across_replications": 0.014931333305980603,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 0.9002103991041943,
+        "mean_across_replications": 0.005968610667490235,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_atm_sigma40",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.8356876019840433,
+        "mean_across_replications": 0.023461724192103996,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.0094189643896474,
+        "mean_across_replications": 0.0021261108094576603,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_itm_spot36_sigma20",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.1868463985078639,
+        "mean_across_replications": 0.008148284313003854,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "method": "linear_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_linear_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.7437628722300642,
+        "mean_across_replications": 0.0015758554759119129,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "vanilla_otm_spot44_sigma20",
+      "method": "spline_cv",
+      "n_paths": 20000,
+      "check": "stopped_martingale_mean_spline_cv",
+      "value": {
+        "max_abs_mean_over_se": 1.5254390623240148,
+        "mean_across_replications": -0.0012587089965381507,
+        "valid_replications": 5,
+        "replications": 5
+      },
+      "passed": true,
+      "tolerance": "each replication has finite positive martingale SE and |mean(M_tau)| <= 6 estimated path standard errors; this is a numerical screening diagnostic, not a proof of unbiasedness"
+    },
+    {
+      "scenario": "all",
+      "check": "finite_pricing_outputs",
+      "value": true,
+      "passed": true,
+      "tolerance": "all prices, standard errors, and path payoff SDs finite"
+    }
+  ],
+  "passed": true
+}

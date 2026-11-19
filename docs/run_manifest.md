@@ -1,15 +1,22 @@
 # Run manifest
 
+The correction branch was created from committed `main` at
+`09b05e4b4182303e043f239565537c25830c75c1`. The original core numerical CSVs
+are retained and were compared automatically against that source commit.
+
 ## Reproducible commands
 
-Run these from `stat906_adaptive_cv` in PowerShell, with the project's
+Run these from the repository root in PowerShell, with the project's
 editable install available:
 
 ```powershell
 python scripts\run_tests.py --output results\smoke
 python scripts\run_smoke.py --output results\smoke
 python scripts\run_core.py --output results\core_20261118
+python scripts\revalidate_results.py results\core_20261118
+python scripts\run_training_sensitivity.py
 python scripts\make_tables_figures.py results\core_20261118
+python scripts\verify_numerical_integrity.py --reference-ref main
 ```
 
 In the recorded Windows session, `python` was not on PATH; the selected
@@ -27,6 +34,9 @@ Dependencies are declared in `pyproject.toml`.
 - Test result: 20 passed, no failures/errors/skips
   (`test_results.json`, `pytest.xml`).
 - Quantitative validation: PASS (`validation.json`).
+- `validation_original.json` preserves the original loose criterion for
+  audit; `validation.json` and `validation_corrected.json` contain the
+  corrected saved-data calculations.
 
 ## Required core run
 
@@ -53,6 +63,20 @@ Dependencies are declared in `pyproject.toml`.
   `martingale_diagnostics.csv`, `exercise_diagnostics.csv`,
   `representative_paths.npz`, the `tables/` CSVs, six PNG/PDF figure pairs,
   and `interpretations.md`.
+
+## Training-fit sensitivity run
+
+- Output directory: `results/training_sensitivity/`.
+- Five independent training fits at the original 20,000 policy-training and
+  20,000 value-training sizes; five 20,000-path pricing replications per fit.
+- All six scenarios are included and every seed is retained in the root
+  `seeds.csv` as well as each `fit_XX/seeds.csv`.
+- Each fit has its own resolved configuration, validation JSON, raw
+  replications, policy/value diagnostics, and summary. Root aggregates are
+  `training_fit_summary.csv`, `sensitivity_summary.csv`, and
+  `core_stability_comparison.csv`.
+- Training fits, not nested pricing replications, are the top-level units in
+  the reported between-fit statistics.
 
 The optional two-asset basket experiment was not run. No separate training
 seed study, full EH MARS implementation, dual upper bound, or exact
