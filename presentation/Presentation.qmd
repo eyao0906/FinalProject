@@ -1,5 +1,5 @@
 ---
-title: "EH-Inspired Martingale Control Variates for Bermudan Options"
+title: "Martingale Control Variates for American-Style Option Pricing"
 subtitle: "Fixed-policy linear and spline estimators with empirical variance reduction"
 author: "Ethan Yao"
 date: "November 25, 2026"
@@ -26,24 +26,12 @@ execute:
   echo: false
 ---
 
-## 1 | Title
-
-**EH-inspired martingale CV for American-style pricing**
-
-Ethan Yao
-
-STAT 906 . Fall 2026
-
-::: {.notes}
-0:10 . Name the fixed-policy focus and Ehrlichman-Henderson inspiration.
-:::
-
-## 2 | European, American, and Bermudan
+## European, American, and Bermudan
 
 ::: {.columns}
 ::: {.column width="55%"}
 - **European:** exercise only at maturity.
-- **American:** exercise continuously over the contract life.
+- **American:** exercise any time over the contract life.
 - **Bermudan:** exercise only on a discrete grid.
 :::
 
@@ -61,7 +49,7 @@ The European Black--Scholes discounted terminal-payoff formula is analytic under
 0:30 . Distinguish contracts; correct the "BSM is unusable" misconception.
 :::
 
-## 3 | Conventional stopping rules: LSM and TVR
+## Conventional stopping rules: LSM and TVR
 
 $$
 e^{-r\Delta}\,\mathbb E[C_{k+1}\mid S_k]
@@ -71,7 +59,8 @@ $$
 
 - **LSM (Longstaff--Schwartz):** regress discounted realized future **exercise cashflows**, typically in-the-money, to approximate continuation and choose stopping.
 - **TVR (Tsitsiklis--Van Roy):** approximate the value/backward Bellman recursion by regressing next-step fitted values.
-- Our project implements LSMC only; TVR is background, not another empirical estimator.
+
+This project implements LSMC as the conventional approach for benchmarking the fixed-policy martingale control variates.
 
 An illustrative vanilla basis is $(1,x,x^2)$, $x=S/K$. The frozen rule $\pi$ is applied out of sample to obtain $\tau^\pi$.
 
@@ -79,7 +68,7 @@ An illustrative vanilla basis is $(1,x,x^2)$, $x=S/K$. The frozen rule $\pi$ is 
 0:40 . Separate the two regression targets.
 :::
 
-## 4 | Ehrlichman--Henderson (2007): what is actually novel
+## Paper Contribution by Ehrlichman--Henderson (2007)
 
 EH builds control variates around a **fixed exercise policy**:
 
@@ -90,13 +79,11 @@ EH builds control variates around a **fixed exercise policy**:
 
 **This study:** independent frozen LSM policy + fixed-knot additive hinges. It is a lower-bound policy estimator, not the full EH adaptive system.
 
-*EH §§2.1, 2.2, 3-3.1, 4, 5.1.*
-
 ::: {.notes}
 0:35 . Show the paper overview and scope boundary.
 :::
 
-## 5 | Price a fixed LSM policy
+## Price a fixed LSM policy
 
 Let $\tau^\pi$ be the first exercise selected by the frozen policy, or maturity.
 
@@ -117,7 +104,7 @@ The exercise rule is fixed. LSMC's continuation regression produces $\pi$; every
 0:35 . Introduce Y, the stopping time, and plain Monte Carlo.
 :::
 
-## 6 | EH martingale correction
+## EH martingale correction
 
 For approximate policy values $h_k(X_k)$,
 $$
@@ -139,7 +126,7 @@ It has the same policy-value expectation as plain Monte Carlo; a coefficient-one
 0:40 . Derive the centered increment and stopped estimator.
 :::
 
-## 7 | Perfect control, proof, and VRF
+## Perfect control, proof, and VRF
 
 If $h_j=L_j^\pi$, then the process telescopes and
 $$
@@ -165,7 +152,7 @@ A VRF of $152.42\times$ means variance $152.42\times$ smaller, while standard-er
 0:50 . Explain Proposition 2.1, telescoping, and covariance/VRF.
 :::
 
-## 8 | Linear control: state and exact GBM term
+## Linear control: state and exact GBM term
 
 $$
 h_k^{lin}(x)=a_k+b_kx,\qquad
@@ -192,7 +179,7 @@ No nested Monte Carlo: the stock innovation conditional expectation is analytic.
 0:35 . Explain stock innovation and linear fitted slope.
 :::
 
-## 9 | Spline control: fixed-knot additive hinges
+## Spline control: fixed-knot additive hinges
 
 $$
 h_k^{spl}(x)
@@ -214,7 +201,7 @@ A spline changes slope in different spot/average regions, whereas linear $h$ has
 0:45 . Define the implemented fixed-knot spline and restriction.
 :::
 
-## 10 | Exact hinge expectations
+## Exact hinge expectations
 
 Each forward/reverse spot hinge has a lognormal Black--Scholes formula:
 $$
@@ -241,7 +228,7 @@ The conditional expectation is analytic; no nested Monte Carlo is used.
 0:35 . Move the exact expectations off the implementation slides and into one proof slide.
 :::
 
-## 11 | Experimental scenarios and protocol
+## Experimental scenarios and protocol
 
 ::: {.columns}
 ::: {.column width="67%"}
