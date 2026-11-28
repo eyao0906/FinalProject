@@ -27,74 +27,223 @@ execute:
   echo: false
 ---
 
-## Problem and paper contribution
+## Problem: pricing early-exercise options
 
 ::: {.columns}
 ::: {.column width="48%"}
-**The problem**
+**European**
 
-- Monte Carlo can value a feasible exercise policy.
-- Each path's discounted payoff is noisy.
-- A good estimate needs fewer paths, not a different exercise decision.
+Exercise only at maturity $T$. Under risk-neutral Black--Scholes dynamics,
+
+$$
+V_0^{E}=e^{-rT}\mathbb E^{\mathbb Q}[g_T(X_T)].
+$$
+
+A vanilla European payoff has a closed-form Black--Scholes price.
 :::
 
 ::: {.column width="48%"}
-**Ehrlichman–Henderson's idea**
+**American / Bermudan**
 
-- Approximate the value of a fixed policy.
-- Use its conditional expectations to build a stopped martingale.
-- Subtract that zero-mean correction to reduce path variance.
+American: exercise at any time up to $T$.
+
+Bermudan: exercise only on a specified grid $t_0,\ldots,t_m$.
+
+$$
+V_0=\sup_{\tau\in\mathcal T}
+\mathbb E^{\mathbb Q}[e^{-r\tau}g_\tau].
+$$
+
+The exercise time $\tau$ is a stopping time, not a fixed maturity.
 :::
 :::
 
-**Question:** How much variance can simple, tractable approximations remove in our LSMC study?
+**Challenge:** Black--Scholes dynamics still apply, but a single discounted terminal payoff no longer captures the early-exercise premium. We must solve an optimal stopping problem.
 
-## Minimal stopping / LSMC background
+## Paper contribution: conventional regression methods
 
-For a put, immediate exercise pays $(K-S_t)^+$. At each eligible date, LSMC compares this with a fitted continuation value and freezes the resulting exercise rule $\pi$.
+At eligible dates $t_k=k\Delta$, let $X_k$ be the Markov state and $g_k(X_k)$ the exercise payoff. For a vanilla put, $X_k=S_k$ and $g_k=(K-S_k)^+$.
 
-**Monthly Bermudan dates:** $t_0=0 \longrightarrow t_1 \longrightarrow \cdots \longrightarrow t_{12}=T$
+**Bellman / Snell recursion**
 
-The out-of-sample stopping time $\tau^\pi$ is the **first** date that frozen rule exercises (or maturity).
+$$
+V_m=g_m,\qquad
+C_k(x)=e^{-r\Delta}\mathbb E^{\mathbb Q}
+[V_{k+1}(X_{k+1})\mid X_k=x],
+$$
 
-*Background: [Longstaff & Schwartz (2001)](https://doi.org/10.1093/rfs/14.1.113).*
+$$
+V_k(x)=\max\{g_k(x),C_k(x)\}.
+$$
+
+- Exercise if $g_k(X_k)\ge C_k(X_k)$; otherwise continue.
+- Longstaff--Schwartz (LSM): regress discounted realized future exercise cashflows on today's state.
+- Tsitsiklis--Van Roy (TVR): approximate the Bellman value/continuation recursion by projecting one-step fitted value targets onto basis functions.
+
+*Both use regression to approximate conditional expectations; this study uses LSM to learn the stopping rule.*
+
+Sources: [Longstaff & Schwartz (2001)](https://doi.org/10.1093/rfs/14.1.113); [Tsitsiklis & Van Roy (2001)](https://doi.org/10.1109/72.935083).
+
+## Paper contribution: how LSM learns a stopping rule
+
+Simulate training paths and work backward from $k=m-1$ to $1$. Write $R_{k+1}^{(i)}$ for the realized future policy cashflow valued at $t_{k+1}$, starting with $R_m=g_m$.
+
+**1. Fit continuation using least squares** (in-the-money paths)
+
+$$
+\widehat\beta_k=\arg\min_\beta
+\sum_{i:g_k(X_k^{(i)})>0}
+\left(e^{-r\Delta}R_{k+1}^{(i)}
+-\beta^\top\phi(X_k^{(i)})\right)^2.
+$$
+
+For a vanilla put, use $x=S_k/K$, $\phi(x)=(1,x,x^2)^\top$ and $\widehat C_k(x)=\widehat\beta_k^\top\phi(x)$.
+
+**2. Update the cashflow:** $R_k=g_k$ if in the money and $g_k\ge\widehat C_k$; otherwise $R_k=e^{-r\Delta}R_{k+1}$.
+
+**3. Freeze $\pi$:** on independent pricing paths, stop at its first exercise date $\tau^\pi$ (or maturity).
+
+The plain estimator is $\widehat L_0^\pi=N^{-1}\sum_i Y_i$, where $Y_i=e^{-r\tau_i^\pi}g_{\tau_i^\pi}$. It targets the feasible policy value, but its payoffs remain noisy.
+
+## Paper contribution: Ehrlichman & Henderson (2007)
+
+**Adaptive Control Variates for Pricing Multi-Dimensional American Options**
+
+Given a feasible stopping policy $\pi$, define its value when starting at $t_k$:
+
+$$
+L_k^\pi(X_k)=\mathbb E^{\mathbb Q}\!
+\left[e^{-r(\tau_k^\pi-t_k)}
+g_{\tau_k^\pi}\mid X_k\right].
+$$
+
+- Fit $h_k(X_k)\approx L_k^\pi(X_k)$ using flexible, adaptive linear regression splines.
+- Construct a zero-mean martingale from the one-step innovations of the fitted value functions.
+- Subtract the martingale at exercise to reduce the variance of the lower-bound estimator; the paper also uses the martingale to obtain a dual upper bound.
+
+**Two distinct regressions:** LSM fits continuation for exercise decisions (regression now); EH fits policy values at their own dates, then takes conditional expectations (regression later).
+
+*Source: [Ehrlichman & Henderson (2007), §§2–4](https://doi.org/10.21314/jcf.2007.167). Our study isolates the lower-bound variance reduction.*
 
 ## EH's core theorem: a perfect control variate
 
-For a fixed policy and state $X_j$, define
+For fixed policy $\pi$ and fitted functions $h_j$, set $D_j=e^{-rt_j}$ and define the martingale
 
 $$
-M_k=\sum_{j=1}^{k}e^{-rt_j}
-\left\{h_j(X_j)-\mathbb E[h_j(X_j)\mid\mathcal F_{j-1}]\right\},
+M_k^h=\sum_{j=1}^{k}D_j
+\left(h_j(X_j)-\mathbb E[h_j(X_j)\mid\mathcal F_{j-1}]\right),
+\qquad M_0^h=0.
 $$
 
-Conditionally on independent, frozen training, optional sampling gives $\mathbb E[M_{\tau^\pi}]=0$ for the bounded stopping time.
-
-With $Y=e^{-r\tau^\pi}g_{\tau^\pi}(X_{\tau^\pi})$, estimate the same policy value by
+Each increment has conditional mean zero. Optional sampling at the bounded exercise time gives $\mathbb E[M_{\tau^\pi}^h]=0$ (subscript denotes evaluation at that exercise date). Conditional on frozen independent training,
 
 $$
-\widehat L_0^\pi=\frac{1}{N}\sum_{i=1}^{N}\left(Y_i-M_{\tau_i^\pi}^{(i)}\right).
+\widehat L_{0,\mathrm{CV}}^\pi=
+\frac{1}{N}\sum_{i=1}^{N}
+\left(Y_i-M_{\tau_i^\pi}^{h,(i)}\right).
 $$
 
-If $h_j=L_j^\pi$, then $Y-M_{\tau^\pi}=L_0^\pi$ **path by path**: zero variance. In practice, $h_j$ is approximate; variance reduction is not guaranteed.
-
-*Source: [Ehrlichman & Henderson (2007), §2.2, Proposition 2.1](https://doi.org/10.21314/jcf.2007.167).*
-
-## Practical approximation: linear versus spline
-
-![Conceptual linear and piecewise-linear control functions; schematic only.](assets/control_shapes.png){width=72%}
+**Proposition 2.1.** If $h_j=L_j^\pi$, then before exercise $D_j\mathbb E[L_j^\pi\mid\mathcal F_{j-1}]=D_{j-1}L_{j-1}^\pi$. The stopped sum telescopes:
 
 $$
-h_{\rm lin}(x)=a+bx
-\qquad
-h_{\rm spl}(x)=a+\sum_{d,\ell}
-\left[b^+_{d\ell}(x_d-c_{d\ell})_+
-+b^-_{d\ell}(c_{d\ell}-x_d)_+\right].
+M_{\tau^\pi}^{L}=Y-L_0^\pi
+\quad\Longrightarrow\quad
+Y-M_{\tau^\pi}^{L}=L_0^\pi
+\quad\text{path by path}.
 $$
 
-Exact GBM hinge expectations avoid nested simulation. Our fixed-knot additive spline is **not** the paper's full adaptive MARS.
+The exact value function gives **zero variance**, but is unknown.
 
-*Method inspiration: [Ehrlichman & Henderson (2007), §§3–3.1](https://doi.org/10.21314/jcf.2007.167).*
+## Practical approximation I: fit the policy value
+
+On separate training paths, form realized labels $R_k^\pi$: use $g_k$ if the frozen policy exercises at $k$, else $e^{-r\Delta}R_{k+1}^\pi$. Thus $\mathbb E[R_k^\pi\mid X_k]=L_k^\pi(X_k)$.
+
+For normalized state $x=X_k/K$, fit $h_k(x)$ to these labels by least squares at each nonterminal date.
+
+::: {.columns}
+::: {.column width="55%"}
+**Linear (additive)**
+
+$$
+h_k^{\rm lin}(x)=a_k+b_k^\top x.
+$$
+
+**Piecewise-linear spline (additive)**
+
+$$
+\begin{aligned}
+h_k^{\rm spl}(x)=a_k+\sum_{d,\ell}
+\big[&b^+_{k,d,\ell}(x_d-c_{k,d,\ell})_+\\
++&b^-_{k,d,\ell}(c_{k,d,\ell}-x_d)_+\big].
+\end{aligned}
+$$
+:::
+
+::: {.column width="43%"}
+![Schematic comparison of linear and piecewise-linear control functions.](assets/control_shapes.png){width=100%}
+
+*Hinges allow slopes to change at knots.*
+:::
+:::
+
+Knots: training-state quartiles (25%, 50%, 75%); exact payoff at maturity. This restricted spline is not the full adaptive MARS of EH.
+
+## Practical approximation II: compute the martingale
+
+For a single spot coordinate under GBM, write $S'=S_{k+1}$, $s=S_k$, and $F=s e^{(r-q)\Delta}$.
+
+**Linear:** $\mathbb E[S'/K\mid S_k=s]=F/K$, so
+
+$$
+\Delta M_{k+1}^{\rm lin}
+=D_{k+1}\frac{b_{k+1}}{K}(S'-F)
+$$
+
+at nonterminal dates. The intercept cancels exactly.
+
+**Spline:** a hinge at normalized knot $c$ is $(S'/K-c)_+=(S'-H)_+/K$, where $H=Kc$. For $H>0$,
+
+$$
+\begin{aligned}
+\mathbb E[(S'-H)_+\mid s]&=F\Phi(d_1)-H\Phi(d_2),\\
+d_1&=\frac{\log(s/H)+(r-q+\sigma^2/2)\Delta}
+{\sigma\sqrt{\Delta}},\qquad d_2=d_1-\sigma\sqrt{\Delta}.
+\end{aligned}
+$$
+
+Apply the analogous put-hinge formula for $(H-S')_+$ and subtract each expected basis value from its realized value. See Backup C for both signs and Asian hinges.
+
+**Benefit:** exact one-step expectations, no nested simulation; the correction remains mean zero even when the fitted value is imperfect.
+
+## Why a better approximation can reduce variance
+
+Let $C=M_{\tau^\pi}^h$ be the stopped control. Our coefficient is fixed at one, so for independent pricing paths,
+
+$$
+\operatorname{Var}(\widehat L_{0,\mathrm{CV}}^\pi)
+=\frac{\operatorname{Var}(Y)+\operatorname{Var}(C)
+-2\operatorname{Cov}(Y,C)}{N}.
+$$
+
+Variance falls relative to plain LSMC iff $2\operatorname{Cov}(Y,C)>\operatorname{Var}(C)$.
+
+**Link to approximation error:** let $\varepsilon_j=h_j(X_j)-L_j^\pi(X_j)$. By linearity of the martingale construction and EH's perfect-control identity,
+
+$$
+Y-M_{\tau^\pi}^h=L_0^\pi-M_{\tau^\pi}^{\varepsilon}.
+$$
+
+Orthogonality of stopped martingale increments then gives
+
+$$
+\operatorname{Var}(Y-M_{\tau^\pi}^h)
+=\sum_{j=1}^m D_j^2\,
+\mathbb E\!\left[\mathbf 1_{\{\tau^\pi\ge t_j\}}
+\operatorname{Var}(\varepsilon_j\mid\mathcal F_{j-1})\right]
+\le \sum_{j=1}^m D_j^2\mathbb E[\varepsilon_j^2].
+$$
+
+A spline can track nonlinear policy values better than a global line, reducing innovation error and potentially increasing VRF. **Improvement is not guaranteed.** All moments are conditional on the frozen training fits.
 
 ## What we actually implemented
 
