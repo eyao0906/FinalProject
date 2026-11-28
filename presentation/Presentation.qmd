@@ -146,7 +146,7 @@ $$
 \mathrm{VRF}
 =\frac{\operatorname{Var}(Y)}{\operatorname{Var}(Y-M_\tau)}.
 $$
-A VRF of $152.42\times$ means variance $152.42\times$ smaller, while standard-error reduction is $\sqrt{152.42}=12.35\times$.
+A VRF of $n\times$ means variance $n\times$ smaller, while standard-error reduction is $\sqrt{n}\times$.
 
 ::: {.notes}
 0:50 . Explain Proposition 2.1, telescoping, and covariance/VRF.
@@ -269,7 +269,7 @@ All VRFs at N=20k are medians over 30 paired pricing replications.
 0:50 . Read scenario parameters and independent experiment flow.
 :::
 
-## 12 | Linear control: concrete implementation
+## Linear control: concrete implementation
 
 **Policy fit first**
 
@@ -295,7 +295,7 @@ The per-path estimator is $Y_i-\sum_{k\le\tau_i^\pi}\Delta M_{i,k}^{lin}$. Plain
 0:40 . Separate policy regression from independently fitted policy-value approximation.
 :::
 
-## 13 | Linear CV vs plain LSMC
+## Linear CV vs plain LSMC
 
 Moderate gains: 1.92-3.47x vanilla; 2.16-15.41x Asian.
 
@@ -318,7 +318,7 @@ Moderate gains: 1.92-3.47x vanilla; 2.16-15.41x Asian.
 0:55 . Present staged linear evidence, define VRF once more.
 :::
 
-## 14 | Spline control: concrete implementation
+## Spline control: concrete implementation
 
 Use 25/50/75% training quantiles as fixed knots:
 $$
@@ -342,7 +342,7 @@ Conditional expectation is the sum of analytic spot/shifted-average hinge expect
 0:45 . Describe the exact restricted spline implementation.
 :::
 
-## 15 | Spline CV vs plain LSMC
+## Spline CV vs plain LSMC
 
 Substantial gains: 38.60-152.42x vanilla; 75.27-94.36x Asian. VRF is variance ratio.
 
@@ -365,7 +365,7 @@ Substantial gains: 38.60-152.42x vanilla; 75.27-94.36x Asian. VRF is variance ra
 0:1:05 . Central empirical slide: spline vs plain, with correct VRF interpretation.
 :::
 
-## 16 | Overall evaluation
+## Overall evaluation
 
 ::: {.columns}
 ::: {.column width="44%"}
@@ -392,7 +392,7 @@ Spline 95% conditional replication interval $[2.292133,2.293486]$ excludes CRR. 
 0:55 . Direct head-to-head then a policy-bias caveat.
 :::
 
-## 17 | Conclusions
+## Conclusions
 
 1. **Exact policy value functions** would yield perfect stopped-martingale controls; tractable conditional expectations make practical approximations possible.
 2. **Linear controls help**, but the restricted spline gives much larger VRFs across tested vanilla and Asian cases.
