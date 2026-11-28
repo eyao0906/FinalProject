@@ -1,8 +1,8 @@
 ---
 title: "Martingale Control Variates for American-Style Option Pricing"
-subtitle: "Fixed-policy linear and spline estimators with empirical variance reduction"
+subtitle: "A numerical study of Ehrlichman & Henderson (2007)"
 author: "Ethan Yao"
-date: "November 25, 2026"
+institute: "STAT 906 · Fall 2026"
 format:
   beamer:
     aspectratio: 169
@@ -17,432 +17,460 @@ format:
       \setbeamercolor{background canvas}{bg=BgColor}
       \setbeamercolor{normal text}{fg=TextColor}
       \setbeamercolor{structure}{fg=Accent}
-      \usebeamercolor[fg]{normal text}
       \usepackage{booktabs}
       \usepackage{graphicx}
       \usepackage{adjustbox}
+      \usepackage{tikz}
 fontsize: 11pt
 execute:
   echo: false
 ---
 
-## European, American, and Bermudan
+## Why early-exercise options are harder to price
 
 ::: {.columns}
-::: {.column width="55%"}
-- **European:** exercise only at maturity.
-- **American:** exercise any time over the contract life.
-- **Bermudan:** exercise only on a discrete grid.
+::: {.column width="48%"}
+**When can the holder exercise?**
+
+- **European:** only at maturity, $T$.
+- **American:** at any time up to $T$.
+- **Bermudan:** at prescribed dates, $t_0,t_1,\ldots,T$.
 :::
+::: {.column width="48%"}
+**The problem studied here**
 
-::: {.column width="42%"}
-**This project**
-
-- Vanilla: 12 monthly dates, 13 grid points including $0$.
-- Asian: 6 monthly dates, no exercise at time $0$.
+- Approximate American-style puts using **monthly Bermudan exercise opportunities**.
+- Vanilla put: 13 eligible dates, including $t_0$.
+- Asian put: six eligible monthly dates, starting at month 1.
 :::
 :::
-
-The European Black--Scholes discounted terminal-payoff formula is analytic under its assumptions, but it **does not directly price an early-exercise put**. Free-boundary PDE methods and matched-grid trees can price American/Bermudan puts. This repository uses the monthly Bermudan approximation.
-
-::: {.notes}
-0:30 . Distinguish contracts; correct the "BSM is unusable" misconception.
-:::
-
-## Conventional stopping rules: LSM and TVR
 
 $$
-e^{-r\Delta}\,\mathbb E[C_{k+1}\mid S_k]
+\underbrace{P_{\rm Eur}=\mathbb E^{\mathbb Q}[e^{-rT}g_T]}_{\text{fixed exercise date}}
+\qquad\text{vs.}\qquad
+\underbrace{V_0=\sup_{\tau\in\mathcal T}\mathbb E^{\mathbb Q}[e^{-r\tau}g_{\tau}]}_{\text{choose when to exercise}}
+$$
+
+**Motivation:** European pricing fixes the exercise date; American pricing must also choose **when to stop**. Trees/PDEs suit simpler state spaces; Monte Carlo handles path dependence but adds **payoff noise**—the problem EH addresses.
+
+
+::: {.notes}
+0:30 — Emphasize that Black--Scholes PDE methods can still price American options numerically; only the European closed form does not directly solve optimal stopping.
+:::
+
+## Conventional pricing: continuation versus exercise
+
+**At each permitted date, should the holder exercise now or wait?**
+The immediate payoff is known; the value of waiting is a conditional expectation. Here $\Delta$ is one exercise interval and $V_{k+1}$ is the next-date option value.
+
+$$
+\underbrace{g_k(X_k)=(K-S_k)^+}_{\text{exercise now}}
 \quad\text{vs.}\quad
-(K-S_k)^+
+\underbrace{C_k(X_k)=e^{-r\Delta}\,\mathbb E^{\mathbb Q}[V_{k+1}(X_{k+1})\mid X_k]}_{\text{continue}}
 $$
 
-- **LSM (Longstaff--Schwartz):** regress discounted realized future **exercise cashflows**, typically in-the-money, to approximate continuation and choose stopping.
-- **TVR (Tsitsiklis--Van Roy):** approximate the value/backward Bellman recursion by regressing next-step fitted values.
+**Exercise if** $g_k(X_k)\geq\widehat C_k(X_k)$, using a fitted continuation value.
 
-This project implements LSMC as the conventional approach for benchmarking the fixed-policy martingale control variates.
+- **Longstaff--Schwartz (LSM):** regress discounted *realized future exercise cashflows* onto state features, typically on in-the-money paths. For a vanilla put, $\widehat C_k(x)=\beta_{k,0}+\beta_{k,1}x+\beta_{k,2}x^2$, with $x=S_k/K$ and fitted weights $\beta_{k,j}$.
+- **Tsitsiklis--Van Roy (TVR):** a related backward fitted-value approach, using *next-step estimated values* as regression targets.
 
-An illustrative vanilla basis is $(1,x,x^2)$, $x=S/K$. The frozen rule $\pi$ is applied out of sample to obtain $\tau^\pi$.
+**LSM fits the stopping rule; EH targets the remaining pricing noise.**
 
 ::: {.notes}
-0:40 . Separate the two regression targets.
+0:35 — $g_k$ is immediate exercise value; $C_k$ is true continuation; $\widehat C_k$ is its fitted approximation. TVR is contextual, not an experimental comparator.
 :::
 
-## Paper Contribution by Ehrlichman--Henderson (2007)
+## Ehrlichman--Henderson (2007): paper overview
 
-EH builds control variates around a **fixed exercise policy**:
+**Objective.** Make simulation-based valuation of American-style options more efficient, including path-dependent and multi-dimensional contracts.
 
-- Approximate the policy value $L_k^\pi$.
-- Center Markov state functions into martingale increments.
-- Use Proposition 2.1 to prove exact zero variance when $h_k=L_k^\pi$.
-- MARS/LDA-MARS fits, CV-aided stopping policy, and a martingale-dual upper bound extend the method.
+**Approach.** Fit the option/policy value at successive dates using **multivariate adaptive regression splines (MARS)**. Choose hinge basis functions whose one-step conditional expectations can be computed without nested simulation.
 
-**This study:** independent frozen LSM policy + fixed-knot additive hinges. It is a lower-bound policy estimator, not the full EH adaptive system.
+**Estimator.** Combine fitted values and their conditional expectations into a **mean-zero martingale**. Subtract its value at the exercise time from the discounted payoff to reduce noise in a lower-bound estimate. A related martingale also yields a dual **upper bound**.
+
+**Theory and experiments.** The exact policy-value function gives a *zero-variance* control; practical approximations can substantially reduce variance. The paper studies Asian, basket and barrier options under several dynamics.
+
+*Our focus:* isolate this martingale-CV idea using frozen LSM exercise policies and **fixed-knot additive splines**, not the paper's full adaptive MARS, policy improvement, or dual upper-bound algorithm.
+
+*Source: Ehrlichman & Henderson (2007), §§2–5.*
 
 ::: {.notes}
-0:35 . Show the paper overview and scope boundary.
+0:35 — Explain objective → approximation → correction → mathematical promise. Do not assume the audience knows paper-specific proposition numbering.
 :::
 
-## Price a fixed LSM policy
+## What exactly are we estimating?
 
-Let $\tau^\pi$ be the first exercise selected by the frozen policy, or maturity.
+Let $\pi$ be the **exercise/continue rule fitted by LSM** and $\tau^\pi$ its **first selected exercise date**, or maturity if the option is never exercised early.
+
+Write $X_k$ for the **state observed at date $k$** (stock price for vanilla; stock price and running average for Asian) and $g_k(X_k)$ for the exercise payoff.
 
 $$
-Y=e^{-r\tau^\pi}g_{\tau^\pi}(X_{\tau^\pi}),\qquad
-\widehat L_0^\pi=\frac1N\sum_{i=1}^N Y_i
+Y=e^{-rt_{\tau^\pi}}g_{\tau^\pi}(X_{\tau^\pi}),
+\qquad
+L_0^\pi=\mathbb E^{\mathbb Q}[Y]\leq V_0.
 $$
 
-Plain Monte Carlo estimates
+**Plain LSM Monte Carlo** prices this *fixed policy* by averaging independent discounted payoffs:
+
 $$
-\operatorname{Var}\!\left(\widehat L_0^\pi\right)
-=\frac{\operatorname{Var}(Y)}{N}.
+\widehat L_{\rm plain}=\frac1N\sum_{i=1}^N Y_i,
+\qquad
+\operatorname{Var}(\widehat L_{\rm plain}\mid\pi)=\frac{\operatorname{Var}(Y\mid\pi)}{N}.
 $$
 
-The exercise rule is fixed. LSMC's continuation regression produces $\pi$; every subsequent estimator uses the same $\pi$, with no policy re-optimization.
+LSM has already determined **when** to exercise. The remaining question is how to estimate $L_0^\pi$ **with less Monte Carlo noise**.
 
 ::: {.notes}
-0:35 . Introduce Y, the stopping time, and plain Monte Carlo.
+0:30 — Introduce pi, tau, state X and policy-value notation only here. Conditional variance assumes the independent training fit is frozen.
 :::
 
-## EH martingale correction
+## The EH stopped-martingale control variate
 
-For approximate policy values $h_k(X_k)$,
-$$
-M_k=\sum_{j=1}^{k}e^{-rt_j}
-\left[h_j(X_j)-\mathbb E[h_j(X_j)\mid\mathcal F_{j-1}\right].
-$$
+Let $L_k^\pi(X_k)$ be the **value of following the frozen policy from date $k$** and $h_k(X_k)$ its fitted approximation. Let $\mathcal F_{k-1}$ denote **information available just before date $k$**.
 
-**Optional sampling:** each increment is conditionally mean zero, so $\mathbb E[M_{\tau^\pi}]=0$ for the bounded stopping time.
-
-The stopped-CV estimator is
 $$
-\widehat L_{\rm CV}
-=\frac1N\sum_i\left(Y_i-M_{\tau_i^\pi}^{(i)}\right).
+\boxed{\Delta M_k=e^{-rt_k}\left[h_k(X_k)-\mathbb E^{\mathbb Q}\{h_k(X_k)\mid\mathcal F_{k-1}\}\right]}
 $$
 
-It has the same policy-value expectation as plain Monte Carlo; a coefficient-one correction changes sampling variance, not exercise decisions.
+Because each increment has conditional mean zero, the accumulated process $M_k=\sum_{j=1}^{k}\Delta M_j$ is a martingale. A bounded policy stopping time yields $\mathbb E[M_{\tau^\pi}]=0$.
+
+$$
+\boxed{\widehat L_{\rm CV}=\frac1N\sum_{i=1}^N\left[Y_i-\sum_{k=1}^{\tau_i^\pi}\Delta M_k^{(i)}\right]}
+$$
+
+**The correction ends when that particular path exercises.** Its expectation is zero, so it changes sampling variance without changing the fixed-policy price.
+
+*Source: Ehrlichman & Henderson (2007), §2.2, Eq. (4).*
 
 ::: {.notes}
-0:40 . Derive the centered increment and stopped estimator.
+0:35 — M is the cumulative centered correction, not a new exercise policy. Conditional centering and independence of fit/pricing ensure validity.
 :::
 
-## Perfect control, proof, and VRF
+## Why an exact value function would eliminate variance
 
-If $h_j=L_j^\pi$, then the process telescopes and
-$$
-Y-M_{\tau^\pi}=L_0^\pi
-\quad\text{path by path}.
-$$
-Thus the exact fixed-policy value gives **zero variance**.
+Define $Z_k=\mathbb E^{\mathbb Q}[Y\mid\mathcal F_k]$: the **time-zero discounted expected payoff given information at date $k$**.
+Before exercise, $Z_k=e^{-rt_k}L_k^\pi(X_k)$.
 
-For an approximation $h$, covariance decomposition shows which correlation remains:
-$$
-\operatorname{Var}(Y-M_\tau)
-=\operatorname{Var}(Y)+\operatorname{Var}(M_\tau)
--2\operatorname{Cov}(Y,M_\tau).
-$$
+For the *ideal* control $h_k=L_k^\pi$ the stopped increments telescope:
 
 $$
-\mathrm{VRF}
-=\frac{\operatorname{Var}(Y)}{\operatorname{Var}(Y-M_\tau)}.
+\begin{aligned}
+M_{\tau^\pi}^*
+&=\sum_{k=1}^{\tau^\pi}(Z_k-Z_{k-1})\\
+&=Z_{\tau^\pi}-Z_0
+=Y-L_0^\pi.
+\end{aligned}
 $$
-A VRF of $n\times$ means variance $n\times$ smaller, while standard-error reduction is $\sqrt{n}\times$.
+
+$$
+\boxed{Y-M_{\tau^\pi}^*=L_0^\pi\quad\text{on every path}}
+$$
+
+**Perfect cancellation gives zero variance.** In practice $h_k$ is estimated, not exact; the quality of the approximation determines how much random variation remains.
+
+*Source: Ehrlichman & Henderson (2007), §2.2, Proposition 2.1.*
 
 ::: {.notes}
-0:50 . Explain Proposition 2.1, telescoping, and covariance/VRF.
+0:40 — The last equality holds because Y is known once the policy exercises, while Z0 is its unconditional expected value.
 :::
 
-## Linear control: state and exact GBM term
+## What the martingale correction actually removes
 
-$$
-h_k^{lin}(x)=a_k+b_kx,\qquad
-h_k^{lin}(x,u)=a_k+b_kx+c_ku
-$$
+**Illustrative preview:** ATM vanilla Bermudan put ($S_0=K=40$, $\sigma=20\%$, $T=1$ year, monthly exercise); **512 sampled paths**. Full experimental setup follows.
 
-for vanilla and Asian states, respectively. Put-like fitted value functions decrease as spot or average rises.
-
-Under GBM,
-$$
-F_{k|k-1}=\mathbb E[S_k\mid\mathcal F_{k-1}]
-=S_{k-1}e^{(r-q)\Delta}.
-$$
-
-Vanilla, nonterminal:
-$$
-\Delta M_k^{lin}
-=e^{-rt_k}\frac{b_k}{K}(S_k-F_{k|k-1}).
-$$
-
-No nested Monte Carlo: the stock innovation conditional expectation is analytic.
-
-::: {.notes}
-0:35 . Explain stock innovation and linear fitted slope.
-:::
-
-## Spline control: fixed-knot additive hinges
-
-$$
-h_k^{spl}(x)
-=a_{k,0}
-+\sum_{d,\ell}\left[
-b^+_{k,d,\ell}(x_d-c_{k,d,\ell})^+
-+b^-_{k,d,\ell}(c_{k,d,\ell}-x_d)^+
-\right].
-$$
-
-- State coordinates: $S/K$; Asian also $A/K$.
-- Knots: 25%, 50%, 75% training quantiles, per date and coordinate.
-- Duplicate knots removed; additive, no cross interaction.
-- Rank-aware ridge fallback; maturity remains exact payoff.
-
-A spline changes slope in different spot/average regions, whereas linear $h$ has one global slope. These are fixed restricted knots, not EH's adaptive MARS.
-
-::: {.notes}
-0:45 . Define the implemented fixed-knot spline and restriction.
-:::
-
-## Exact hinge expectations
-
-Each forward/reverse spot hinge has a lognormal Black--Scholes formula:
-$$
-\mathbb E[(S'-H)^+\mid S=s]
-=se^{(r-q)\Delta}\Phi(d_1)-H\Phi(d_2),
-$$
-$$
-\mathbb E[(H-S')^+\mid S=s]
-=H\Phi(-d_2)-se^{(r-q)\Delta}\Phi(-d_1).
-$$
-
-For a normalized Asian average hinge,
-$$
-\mathbb E[(A_k-cK)^+\mid\mathcal F_{k-1}]
-=\frac1k\,\mathbb E[(S_k-H)^+\mid\mathcal F_{k-1}],
-$$
-$$
-H=kcK-(k-1)A_{k-1}.
-$$
-
-The conditional expectation is analytic; no nested Monte Carlo is used.
-
-::: {.notes}
-0:35 . Move the exact expectations off the implementation slides and into one proof slide.
-:::
-
-## Experimental scenarios and protocol
+\begin{center}
+\includegraphics[width=0.94\textwidth,height=0.40\textheight,keepaspectratio]{../results/core_20261118/figures/martingale_correction_vanilla.png}
+\end{center}
 
 ::: {.columns}
-::: {.column width="67%"}
-| Contract / scenario | $S_0$ | $K$ | $\sigma$ | $T$ | Dates |
+::: {.column width="32%"}
+**A · Payoff vs. correction**
+
+Scatter of $Y$ against $M_\tau$: larger payoffs receive larger corrections.
+:::
+::: {.column width="32%"}
+**B · Plain payoff**
+
+The distribution of $Y$ is broad, with many zeros: its sample mean is noisy.
+:::
+::: {.column width="32%"}
+**C · Adjusted payoff**
+
+The distribution of $Y-M_\tau$ is tighter: its sample mean is more precise.
+:::
+:::
+
+**Takeaway:** Less sampling noise, same fixed-policy expectation.
+
+::: {.notes}
+0:30 — This is a visual preview of one ATM vanilla Bermudan test, not the complete experimental results. A: the correction tracks the raw payoff; B: unadjusted discounted payoffs are dispersed; C: subtracting the correction concentrates the payoff values. Avoid reporting the displayed sample VRF as a headline finding; full scenario assumptions and numerical results come later.
+:::
+
+## Linear versus spline: what is being approximated?
+
+Both controls approximate **the same frozen-policy value function**, not the LSM continuation regression used to choose exercise.
+
+::: {.columns}
+::: {.column width="48%"}
+**Linear approximation**
+
+$$h_k^{\rm lin}(x)=a_k+b_kx$$
+
+- $x=S_k/K$: normalized stock price.
+- $a_k,b_k$: fitted intercept and slope.
+- One slope at all stock-price levels.
+:::
+::: {.column width="48%"}
+**Piecewise-linear spline**
+
+$$h_k^{\rm spl}(x)=a_k+\sum_\ell\big[\beta_\ell(x-c_\ell)^++\gamma_\ell(c_\ell-x)^+\big]$$
+
+- $c_\ell$: state-space knot locations.
+- $\beta_\ell,\gamma_\ell$: fitted hinge weights.
+- The slope can change at each knot.
+:::
+:::
+
+![](assets/control_shapes_revised.png){width=75%}
+
+**Intuition:** a put's value changes slope around the strike/exercise region. Here $(z)^+=\max(z,0)$; the plotted functions are **schematic**, not fitted experimental outputs.
+
+::: {.notes}
+0:30 — Emphasize one slope versus changing slopes; avoid showing a made-up fitted curve as actual model output.
+:::
+
+## Why spline conditional expectations remain tractable
+
+Each spline is a **weighted sum of hinges**. Under one GBM step, a spot hinge is a call-like payoff with an analytic lognormal expectation:
+
+$$
+\mathbb E[(S_{k+1}-H)^+\mid S_k=s]
+=F\Phi(d_1)-H\Phi(d_2),\qquad F=se^{(r-q)\Delta}.
+$$
+
+Here $H$ is a **hinge threshold** in stock-price units, $F$ is the **one-step conditional mean stock price**, and $\Phi$ is the standard-normal CDF. The standardized lognormal terms $d_1,d_2$ are defined in the technical backup.
+
+For the Asian state, $A_k=k^{-1}\sum_{j=1}^{k}S_j$ is the **running arithmetic average** (excluding $S_0$). A hinge on the next average reduces to a shifted spot hinge:
+
+$$
+\left(\frac{A_{k+1}}K-c\right)^+
+=\frac{(S_{k+1}-H_k)^+}{(k+1)K},
+\quad H_k=(k+1)Kc-kA_k.
+$$
+
+**Result:** compute $\mathbb E[h_k(X_k)\mid\mathcal F_{k-1}]$ by adding exact one-step hinge expectations—**no nested Monte Carlo**.
+
+::: {.notes}
+0:35 — The Asian state is (S,A). Explain that H_k is known given the previous state, so the same one-step identity applies.
+:::
+
+## Empirical setup: the same tests for all estimators
+
+::: {.columns}
+::: {.column width="65%"}
+| Scenario | $S_0$ | $K$ | $\sigma$ | $T$ | Exercise |
 |:--|--:|--:|--:|--:|:--|
-| Vanilla ATM low vol | 40 | 40 | .20 | 1 | 0-12 |
-| Vanilla ATM high vol | 40 | 40 | .40 | 1 | 0-12 |
-| Vanilla ITM | 36 | 40 | .20 | 1 | 0-12 |
-| Vanilla OTM | 44 | 40 | .20 | 1 | 0-12 |
-| Asian K95 | 100 | 95 | .30 | .5 | 1-6 |
-| Asian K115 | 100 | 115 | .30 | .5 | 1-6 |
+| Vanilla ATM, low vol | 40 | 40 | .20 | 1 | 0–12 |
+| Vanilla ATM, high vol | 40 | 40 | .40 | 1 | 0–12 |
+| Vanilla ITM | 36 | 40 | .20 | 1 | 0–12 |
+| Vanilla OTM | 44 | 40 | .20 | 1 | 0–12 |
+| Asian put $K=95$ | 100 | 95 | .30 | .5 | 1–6 |
+| Asian put $K=115$ | 100 | 115 | .30 | .5 | 1–6 |
 :::
-::: {.column width="29%"}
-**Common inputs**
+::: {.column width="32%"}
+**Common assumptions**
 
-- $r=.06,\ q=0$
-- 12 monthly / 6 monthly
-- $A_k=\sum_{j=1}^{k}S_j/k$
-- GBM risk-neutral paths
+- Risk-neutral GBM
+- $r=6\%$; $q=0$ (dividend yield)
+- Monthly exercise grid
+- Asian payoff $(K-A_k)^+$
 
-**Benchmarks**
+**Validation**
 
-- CRR 1200 / 2400 steps aligned to 13 vanilla dates
-- No exact Asian CRR
+- Vanilla: matched CRR tree
+- Asian: no exact benchmark
 :::
 :::
 
-$$
-\text{20k policy} \rightarrow \pi
-\rightarrow \text{20k value fit}
-\rightarrow \text{5k validation}
-\rightarrow \text{30x5k/20k paired runs}
-$$
+**Independent stages:** 20k policy paths $\rightarrow$ freeze $\pi$ $\rightarrow$ 20k value-fit paths $\rightarrow$ 5k validation paths $\rightarrow$ 30 paired pricing replications at each of $N=5$k and $20$k.
 
-All VRFs at N=20k are medians over 30 paired pricing replications.
+The reported VRFs below use **$N=20{,}000$**, median across 30 replications. Recorded checks: **26 tests and 57 core numerical validations passed**.
 
 ::: {.notes}
-0:50 . Read scenario parameters and independent experiment flow.
+0:40 — All three methods use the same frozen LSM exercise rule and same paired pricing paths. Dates 0–12 means 13 eligible vanilla dates.
 :::
 
-## Linear control: concrete implementation
+## Linear martingale control: implementation
 
-**Policy fit first**
+First fit **LSM continuation** and freeze the stopping rule. On *separate* value-training paths, regress realized future fixed-policy cashflows onto a linear state function:
 
-1. Fit LSM continuation on 20k paths; freeze $\pi$.
-2. Independently generate 20k value-training paths.
-3. Form realized future frozen-policy cashflow labels $L_k^\pi$.
-4. Fit linear $h_k$; keep terminal $h_T=g_T$ exact.
-
-**Asian increment**
 $$
-\mathbb E[A_k\mid\mathcal F_{k-1}]
-=\frac{(k-1)A_{k-1}+F_{k|k-1}}{k},
-$$
-$$
-\Delta M_k^{lin}
-=e^{-rt_k}\frac{b_k+c_k/k}{K}
-(S_k-F_{k|k-1}).
+\begin{aligned}
+\text{Vanilla:}\quad &h_k^{\rm lin}(x_k)=a_k+b_kx_k,\\
+\text{Asian:}\quad &h_k^{\rm lin}(x_k,u_k)=a_k+b_kx_k+\eta_k u_k.
+\end{aligned}
 $$
 
-The per-path estimator is $Y_i-\sum_{k\le\tau_i^\pi}\Delta M_{i,k}^{lin}$. Plain LSMC is the same frozen policy with no correction.
+Here $x_k=S_k/K$, $u_k=A_k/K$, and $\eta_k$ is the **fitted running-average coefficient**.
+
+For fitted **nonterminal** vanilla dates, $F_{k\mid k-1}=S_{k-1}e^{(r-q)\Delta}$, so
+
+$$
+\boxed{\Delta M_k^{\rm lin}=\frac{e^{-rt_k}b_k}{K}\left(S_k-F_{k\mid k-1}\right).}
+$$
+
+For Asian, the analogous coefficient is $b_k+\eta_k/k$. **At maturity $h_T=g_T$ exactly**, not a linear fit.
+
+
 
 ::: {.notes}
-0:40 . Separate policy regression from independently fitted policy-value approximation.
+0:35 — Stress that linear regression h is a *different* fit from LSM continuation C-hat; all coefficient fits use only training paths.
 :::
 
-## Linear CV vs plain LSMC
+## Linear CV versus plain LSMC
 
-Moderate gains: 1.92-3.47x vanilla; 2.16-15.41x Asian.
+**N = 20,000 pricing paths; 30 independent replications.** The linear control changes the variance, not the fitted exercise policy.
 
-**Vanilla puts**
-
-| Scenario | Plain | Linear | Median VRF |
+| Contract / scenario | Plain LSMC | Linear CV | Median VRF |
 |:--|--:|--:|--:|
-| ATM $\sigma20$ | 2.29967 | 2.29292 | 2.61x |
-| ATM $\sigma40$ | 5.29589 | 5.28967 | 2.51x |
-| ITM $S_0=36$ | 4.44051 | 4.43799 | 3.47x |
-| OTM $S_0=44$ | 1.09464 | 1.09538 | 1.92x |
-**Arithmetic Asian puts**
+| **Vanilla** ATM, $\sigma=20\%$ | 2.29967 | 2.29292 | 2.61× |
+| **Vanilla** ATM, $\sigma=40\%$ | 5.29589 | 5.28967 | 2.51× |
+| **Vanilla** ITM, $S_0=36$ | 4.44051 | 4.43799 | 3.47× |
+| **Vanilla** OTM, $S_0=44$ | 1.09464 | 1.09538 | 1.92× |
+| **Asian** $K=95$ | 2.74156 | 2.74450 | 2.16× |
+| **Asian** $K=115$ | 15.89030 | 15.89467 | **15.41×** |
 
-| Strike | Plain | Linear | Median VRF |
-|--:|--:|--:|--:|
-| K95 | 2.74156 | 2.74450 | 2.16x |
-| K115 | 15.89030 | 15.89467 | 15.41x |
+**Interpretation:** linear correction gives moderate VRF in the vanilla cases (1.92–3.47×) and Asian $K=95$; it is stronger for Asian $K=115$. The differing sample means are **not** changes to the policy or its expected value.
 
 ::: {.notes}
-0:55 . Present staged linear evidence, define VRF once more.
+0:45 — Vanilla and Asian rows remain distinguishable, with one full-width table to avoid overflow. VRF is pathwise variance ratio; means average 30 pricing replications.
 :::
 
-## Spline control: concrete implementation
+## Spline martingale control: implementation
 
-Use 25/50/75% training quantiles as fixed knots:
+The project replaces the linear approximation with a **restricted additive degree-one spline**:
+
 $$
-h_k^{spl}(x)
-=a+\sum_{d,\ell}\left[
-b^+(x_d-c)^+ + b^-(c-x_d)^+
-\right].
+\boxed{h_k^{\rm spl}(x)=a_{k,0}+\sum_{d,\ell}\left[b^+_{k,d,\ell}(x_d-c_{k,d,\ell})^++b^-_{k,d,\ell}(c_{k,d,\ell}-x_d)^+\right].}
 $$
 
-- Fit one separate spline to backward realized-policy labels on 20k value-training paths.
-- Vanilla: $x=S/K$; Asian: $x=(S/K,A/K)$.
-- Frozen knots/coefs; no fit on pricing paths.
-- Additive only; ridge fallback for rank/ill-conditioning.
-- Terminal $h_T=g_T$ exact.
+Here $d$ indexes **state coordinates** (spot; also running average for Asian), and $\ell$ indexes **knots**. The $b^\pm_{k,d,\ell}$ are fitted hinge weights, and $c_{k,d,\ell}$ are knot thresholds.
 
-Conditional expectation is the sum of analytic spot/shifted-average hinge expectations. $\widehat L_{spl}$ = mean $Y-M_\tau^{spl}$.
+- Knots at the **25th, 50th, 75th percentiles of independent training states**, per date and coordinate.
+- Fit to the same frozen-policy value targets; no pricing-path training.
+- Additive only: no interaction products. Rank-aware ridge fallback when needed.
+- Terminal $h_T=g_T$ remains exact.
 
-**EH full MARS is more adaptive.**
+**EH's paper adaptively selects MARS knots and basis terms; this experiment holds candidate knot quantiles fixed.**
 
 ::: {.notes}
-0:45 . Describe the exact restricted spline implementation.
+0:40 — This is EH's tractable additive hinge idea, but not a replication of full MARS. Analytic conditional expectations were derived earlier.
 :::
 
-## Spline CV vs plain LSMC
+## Spline CV versus plain LSMC
 
-Substantial gains: 38.60-152.42x vanilla; 75.27-94.36x Asian. VRF is variance ratio.
+**N = 20,000 pricing paths; 30 independent replications.** The identical LSM rule is used in both columns.
 
-**Vanilla puts**
-
-| Scenario | Plain | Spline | Median VRF |
+| Contract / scenario | Plain LSMC | Spline CV | Median VRF |
 |:--|--:|--:|--:|
-| ATM $\sigma20$ | 2.29967 | 2.29281 | 152.42x |
-| ATM $\sigma40$ | 5.29589 | 5.28706 | 151.85x |
-| ITM $S_0=36$ | 4.44051 | 4.43915 | 151.45x |
-| OTM $S_0=44$ | 1.09464 | 1.09616 | 38.60x |
-**Arithmetic Asian puts**
+| **Vanilla** ATM, $\sigma=20\%$ | 2.29967 | 2.29281 | **152.42×** |
+| **Vanilla** ATM, $\sigma=40\%$ | 5.29589 | 5.28706 | **151.85×** |
+| **Vanilla** ITM, $S_0=36$ | 4.44051 | 4.43915 | **151.45×** |
+| **Vanilla** OTM, $S_0=44$ | 1.09464 | 1.09616 | **38.60×** |
+| **Asian** $K=95$ | 2.74156 | 2.73967 | **94.36×** |
+| **Asian** $K=115$ | 15.89030 | 15.89604 | **75.27×** |
 
-| Strike | Plain | Spline | Median VRF |
-|--:|--:|--:|--:|
-| K95 | 2.74156 | 2.73967 | 94.36x |
-| K115 | 15.89030 | 15.89604 | 75.27x |
+**Interpretation:** flexible hinges capture much more of the discounted-payoff fluctuation in both contract classes. For vanilla ATM at 20%, **152.42× less variance** corresponds to $\sqrt{152.42}\approx12.35$ times smaller **standard error** at fixed $N$.
 
 ::: {.notes}
-0:1:05 . Central empirical slide: spline vs plain, with correct VRF interpretation.
+0:50 — Highlight 152× vanilla and 94× Asian, while noting OTM's smaller VRF; neither method changes stopping decisions.
 :::
 
-## Overall evaluation
+## Vanilla spline performance: sensitivity to conditions
+
+![](assets/vanilla_vrf_sensitivity.png){width=83%}
+
+**Reading:** spline VRF stays close to 150× for ATM $\sigma=20\%/40\%$ and ITM; OTM falls to about 39×. Across $N=5{,}000$ and $20{,}000$, VRFs are broadly stable.
+
+*This tests sensitivity to the contract state, not a change in the LSM exercise policy.*
+
+::: {.notes}
+0:20 — Moved from original Backup B. Point to one robust feature and the OTM exception.
+:::
+
+## Overall interpretation: precision is not policy accuracy
 
 ::: {.columns}
-::: {.column width="44%"}
-**Plain -> linear -> spline**
+::: {.column width="40%"}
+**ATM vanilla, $\sigma=20\%$**
 
-- Vanilla ATM20: 1x -> 2.61x -> 152.42x
-- Asian K95: 1x -> 2.16x -> 94.36x
+| Estimator | Price | VRF |
+|:--|--:|--:|
+| Plain | 2.29967 | 1× |
+| Linear | 2.29292 | 2.61× |
+| Spline | 2.29281 | 152.42× |
 
-**Matched ATM20 reference**
-
-- Monthly Bermudan CRR: 2.297126
-- Plain: 2.299674
-- Linear: 2.292915
-- Spline: 2.292810
+Matched monthly Bermudan **CRR $\approx 2.29713$**.
 :::
-::: {.column width="54%"}
-![ATM20 conditional intervals and CRR reference](assets/atm20_price.png){width=100%}
+::: {.column width="57%"}
+![](assets/atm20_price.png){width=98%}
 :::
 :::
 
-Spline 95% conditional replication interval $[2.292133,2.293486]$ excludes CRR. That is consistent with fixed-policy approximation bias; CV variance reduction does not remove it.
+The spline's narrow conditional 95% interval **[2.29213, 2.29349]** lies below CRR: a strong reduction in Monte Carlo noise does **not** fix the suboptimal frozen exercise rule.
 
 ::: {.notes}
-0:55 . Direct head-to-head then a policy-bias caveat.
+0:45 — CIs are across 30 pricing replications with one frozen training fit, not total training/model uncertainty. CRR is aligned to the same exercise dates.
+:::
+
+## Is the variance reduction worth the CPU cost?
+
+![](assets/cpu_efficiency.png){width=76%}
+
+**Spline CPU-adjusted efficiency:** **18.48×** (vanilla ATM 20%) and **9.77×** (Asian $K=95$), after allocated training/evaluation costs. Five independent fits still show large spline VRFs (**38–171×**).
+
+
+::: {.notes}
+0:35 — Moved from original Backup A. An efficiency ratio is not a literal speedup; robustness and CPU estimates have different uncertainties.
 :::
 
 ## Conclusions
 
-1. **Exact policy value functions** would yield perfect stopped-martingale controls; tractable conditional expectations make practical approximations possible.
-2. **Linear controls help**, but the restricted spline gives much larger VRFs across tested vanilla and Asian cases.
-3. Both CVs estimate the **same frozen-policy value**. Greater precision is not better optimal stopping.
+1. **EH's principle:** exact policy-value functions would produce a zero-variance stopped-martingale control; analytic hinge expectations make useful approximations feasible.
+2. **What we observed:** linear controls help, but restricted additive splines achieve substantially larger variance reduction for both vanilla and Asian Bermudan puts.
+3. **What remains:** all methods price the **same frozen LSM policy**. Reduced variance does not imply better exercise decisions or an optimal-value confidence interval.
 
-**Limits:** no full adaptive MARS, no policy re-optimization, no martingale-dual upper bound, no exact Asian optimal-value benchmark.
+**Scope:** fixed-knot rather than full adaptive MARS; no policy re-optimization, martingale-dual upper bound or exact Asian optimal-price benchmark.
 
-*Ehrlichman & Henderson (2007), The Journal of Computational Finance 11(1), 65-91.*
+*Primary reference: Ehrlichman & Henderson (2007), “Adaptive Control Variates for Pricing Multi-Dimensional American Options.”*
 
 ::: {.notes}
-0:30 . Close with three takeaways and limits.
+0:25 — End on the three points. The CPU/robustness and correction plots have all been restored to the main narrative.
 :::
 
-## Backup A | CPU efficiency and fit robustness
+## Technical backup | Complete lognormal hinge formula
 
-![CPU-adjusted efficiency](assets/cpu_efficiency.png){width=78%}
+For $S'$ a one-step GBM stock price given current $S=s$, and positive threshold $H$,
 
-- Spline CPU efficiency: vanilla ATM20 18.48x; Asian K95 9.77x.
-- Five independent spline training fits showed VRFs 37.7-171.0x; variability beyond frozen-fit CIs.
-- Timings are hardware-specific.
-
-## Backup B | Vanilla VRF sensitivity
-
-![Saved-data median VRF by volatility, moneyness and path count](assets/vanilla_vrf_sensitivity.png){width=88%}
-
-## Backup C | 512-path correction illustration
-
-![Saved 512-path correction illustration](../results/core_20261118/figures/martingale_correction_vanilla.png){width=88%}
-
-Illustrative subset from replication 0 of the N=5,000 archive; not a full-run median.
-
-## Backup D | Detailed GBM hinge formulas
-
-For $S'$ one GBM step from $s$, let
 $$
-d_1=\frac{\log(s/H)+(r-q+\sigma^2/2)\Delta}{\sigma\sqrt\Delta},
-\quad d_2=d_1-\sigma\sqrt\Delta.
-$$
-$$
-\mathbb E[(S'-H)^+\mid s]=se^{(r-q)\Delta}\Phi(d_1)-H\Phi(d_2),
-$$
-$$
-\mathbb E[(H-S')^+\mid s]=H\Phi(-d_2)-se^{(r-q)\Delta}\Phi(-d_1).
+\begin{aligned}
+d_1&=\frac{\log(s/H)+(r-q+\sigma^2/2)\Delta}{\sigma\sqrt\Delta},
+&d_2&=d_1-\sigma\sqrt\Delta,\\
+\mathbb E[(S'-H)^+\mid S=s]&=F\Phi(d_1)-H\Phi(d_2),
+&F&=se^{(r-q)\Delta},\\
+\mathbb E[(H-S')^+\mid S=s]&=H\Phi(-d_2)-F\Phi(-d_1).
+\end{aligned}
 $$
 
-$H>0$, $\sigma>0$, $\Delta>0$. For $H\le0$, call $=se^{(r-q)\Delta}-H$ and put $=0$. Zero $\sigma$ or $\Delta$ uses the deterministic forward.
+For $H\le0$: positive hinge expectation $F-H$, reverse hinge expectation zero. The deterministic-forward case covers $\sigma=0$ or $\Delta=0$.
 
-## Backup E | Method differences and complete scope
+The Asian transformed threshold is $H_k=(k+1)Kc-kA_k$, which is known before the next spot step.
 
-- EH full method: adaptive MARS/LDA-MARS; CV-aided stopping; martingale-dual upper bound.
-- This study: fixed 25/50/75% knots, additive hinges, independently fitted frozen LSM policy, lower-bound policy estimate.
-- Policy fit: 20k paths; value fit: 20k; validation: 5k; pricing: 30x5k/20k paired replications.
-- 26/26 smoke tests; 57/57 core checks; max stopped-martingale $|z|\approx2.865$.
+## Technical backup | Scope and validation
+
+- EH full method includes adaptive MARS/LDA-MARS, CV-aided stopping, lower and martingale-dual upper bounds; our fixed-knot additive CV isolates the lower-bound mechanism.
+- Original core: 4 vanilla + 2 Asian cases; 20k policy and value training, 5k validation, 30 paired replications at $N=5$k and $20$k.
+- Recorded numerical checks: 26 unit tests and 57/57 core validations passed; maximum stopped-martingale $|z|\approx2.865$.
+- Five independent training fits corroborate large spline VRFs; between-fit dispersion includes pricing noise and is not a pure decomposition of training uncertainty.
+
+**References:** Ehrlichman & Henderson (2007), *The Journal of Computational Finance* 11(1), 65–91; Longstaff & Schwartz (2001), *Review of Financial Studies* 14(1), 113–147; Tsitsiklis & Van Roy (2001), *IEEE Transactions on Neural Networks* 12(4), 694–703.
