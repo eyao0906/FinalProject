@@ -1,6 +1,6 @@
 # STAT 906 presentation draft
 
-`Presentation.qmd` is the editable source for the 12-slide timed Beamer deck and its three explicitly marked backup slides. `Presentation.pdf` is the rendered draft. `slide_notes.md` has brief speaking cues and timings; `source_trace.md` maps displayed values and figures back to saved records.
+`Presentation.qmd` is the editable source for the 17-main-slide timed Beamer deck and its explicitly marked backup slides. `Presentation.pdf` is the rendered draft. `slide_notes.md` has brief speaking cues and timings; `source_trace.md` maps displayed values and figures back to saved records.
 
 ## Reproducible render
 

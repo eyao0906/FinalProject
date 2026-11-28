@@ -19,3 +19,6 @@ All project results below are read from committed saved data. The chart builder 
 | Fixed-policy and Asian-state definitions | `docs/methods.md` | Includes \(\tau^\pi\), \(Y\), \(M_\tau\), Asian average excluding \(S_0\), and conditional hinge expectations. |
 | EH theorem, spline, and Asian comparison | Ehrlichman & Henderson (2007), §§2.2 (Proposition 2.1), 3–3.1, and 5.1; cited by DOI in the deck | Project method is a restricted fixed-knot spline CV, not the paper's full adaptive MARS, policy improvement, or dual upper bound. |
 | LSM background | Longstaff & Schwartz (2001), cited by DOI in the deck | Supporting reference only; EH is the central paper. |
+| Linear N=20k results | `summary.csv`; six scenario rows, method `linear_cv`, fields `mean_price`, `median_vrf` | Plain row uses the same scenario and field `mean_price`. |
+| Spline N=20k results | `summary.csv`; six scenario rows, method `spline_cv`, fields `mean_price`, `median_vrf` | Spline slide displays the saved central values with paired full-run medians. |
+| Experiment protocol | `configs/core.yaml`; `summary.csv`; `docs/methods.md` | The independent 20k policy, 20k value, 5k validation, and 30 replicated pricing streams are frozen in the saved run. |

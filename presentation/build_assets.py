@@ -50,9 +50,9 @@ def finish(fig, filename):
 
 
 def make_control_shapes():
-    x = pd.Series([0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
-    linear = 0.7 + 0.72 * x
-    spline = pd.Series([0.5, 1.2, 1.8, 2.65, 3.55, 4.0, 4.35])
+    x = pd.Series([0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8])
+    linear = 4.1 - 1.8 * x
+    spline = pd.Series([4.1, 3.35, 2.45, 1.75, 1.1, 0.55, 0.22])
     fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.0), sharey=True)
     for ax, y, title, color in (
         (axes[0], linear, "Linear control", BLUE),
